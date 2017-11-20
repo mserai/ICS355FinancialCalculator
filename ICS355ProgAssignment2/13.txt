@@ -1,0 +1,2 @@
+Amount Type
+1.0 USD
