@@ -1,0 +1,2 @@
+username password balance type 
+admin $2a$12$TRuSTU9UdpSpNPBL4TWd3eOAQwHdcRQZ0DkJMOkQ0owRwmiE4Q3NK 100 USD
