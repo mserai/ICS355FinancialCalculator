@@ -10,7 +10,7 @@ import java.io.UnsupportedEncodingException;
  *
  * @author Mike Serai
  * @assignment ICS 355: Progassignment 2
- * @date 11/17/17
+ * @date 12/1/17
  */
 public class ICS355ProgAssignment2 {
 
