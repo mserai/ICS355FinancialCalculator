@@ -1,2 +1,2 @@
 # ICS355FinancialCalculator
-I used jGRASP to edit my financial calculator. I have added the admin.txt file, which needs to be used as a commandline argument. the username is admin and the password is adminpass. I have used BCrypt to generate the salt and hash. 
+The standalone ICS355ProgAssignment2.java file is my updated assignment. I used jGRASP to edit my financial calculator. I have added the admin.txt file, which needs to be used as a commandline argument. The username is admin and the password is adminpass. I have used BCrypt to generate the salt and hash for the passwords. I had a grueling experience with this and should have listened to my gut instinct and used a different language, something I'm more comfortable with. 
