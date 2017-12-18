@@ -10,7 +10,7 @@ import java.io.UnsupportedEncodingException;
  *
  * @author Mike Serai
  * @assignment ICS 355: Progassignment 2
- * @date 12/1/17
+ * @date 11/17/17
  */
 public class ICS355ProgAssignment2 {
 
@@ -23,14 +23,53 @@ public class ICS355ProgAssignment2 {
      * @param args the command line arguments
      */
    public static void main(String[] args) {  
-      // Login or Create Process
-      System.out.println("Welcome!\nWould you please:\nEnter (1) to Create an Account"
-                + "\nEnter (2) to Log In ");
+      
+            
+      // Login
+         System.out.println("Please Login");
+         // Enter username
+         System.out.println("Please enter your username.");
+         Scanner scannerEnterID = new Scanner(System.in);
+         String userEnterID = scannerEnterID.nextLine();
+         System.out.println("You have entered " + userEnterID + " as your username");
+         // Prepare for file
+         File adminFile = null;
+         Scanner readFromAdmin = null;
+         Scanner readlineInput = null;
+         String lineofAdmin = null;
+         adminFile = new File(args[0]);
+         try{
+            readFromAdmin = new Scanner(adminFile);
+         }
+         catch (FileNotFoundException exception) {
+            System.out.println("No Admin File.");
+            System.exit(1);
+         }
+         System.out.println("Please enter your password.");
+         Scanner scannerEnterPass = new Scanner(System.in);
+         String userEnterPass = scannerEnterPass.nextLine();
+         String PasswordHash = BCrypt.hashpw(userEnterPass, BCrypt.gensalt(12));
+         //System.out.println("You have entered " + userEnterPass + " as your password");
+         while (readFromAdmin.hasNextLine()) {
+            lineofAdmin = readFromAdmin.nextLine();
+            readlineInput = new Scanner(lineofAdmin).useDelimiter("\\s|\\n");
+         //System.out.println(lineofAdmin);
+            String username = readlineInput.next();
+            String password = readlineInput.next();
+            boolean matched = BCrypt.checkpw(password, PasswordHash);
+            if (matched == true) {
+               System.out.println(matched + "!!!!!!!!");
+            }
+            String balance = readlineInput.next();
+            String type = readlineInput.next();
+         }// while
+         
+         // Create Account
+      System.out.println("Would you like to create an account? Enter Yes or No. ");
       Scanner scannerInitial = new Scanner(System.in);
       String userInitialChoice = scannerInitial.nextLine();
       System.out.println("You have entered " + userInitialChoice);
-      // Create an Account
-      if (userInitialChoice.matches("1")) {
+      if (userInitialChoice.matches(".*\\byes\\b")) {
          System.out.println("You have chosen to Create an Account");
          // Select a Username
          System.out.println("Please enter your username");
@@ -38,19 +77,20 @@ public class ICS355ProgAssignment2 {
          String userNameScanner = scannerUserName.nextLine();
          System.out.println("You have entered: " + userNameScanner);
          String userNameScannerSearch = userNameScanner.toLowerCase();
+         // Finish filename
          String isNew = userNameScanner + ".txt";
          File newFile = new File(isNew);
          try {
             if (newFile.createNewFile()) {
-            System.out.println("You have created a new account");
+               System.out.println("You have created a new account");
             }
             else {
-            System.out.println("I'm sorry, someone already has this username. Please try again.");
-            System.exit(1);
+               System.out.println("I'm sorry, someone already has this username. Please try again.");
+               System.exit(1);
             }
-            }//try
+         }//try
          catch (IOException e) {
-         System.out.println("Sorry");
+            System.out.println("Sorry");
          } 
          // Select password
          System.out.println("Please enter your password");
@@ -59,22 +99,25 @@ public class ICS355ProgAssignment2 {
          System.out.println("You have entered: " + userPassScanner);
          // Utilize BCrypt to salt and hash the password
          // BCrypt License is above BCrypt class below
-		   String generatedSecuredPasswordHash = BCrypt.hashpw(userPassScanner, BCrypt.gensalt(12));
-		   System.out.println(generatedSecuredPasswordHash);
-			boolean matched = BCrypt.checkpw(userPassScanner, generatedSecuredPasswordHash);
-		   System.out.println(matched);
+         String generatedSecuredPasswordHash = BCrypt.hashpw(userPassScanner, BCrypt.gensalt(12));
+         System.out.println(generatedSecuredPasswordHash);
+         boolean matched = BCrypt.checkpw(userPassScanner, generatedSecuredPasswordHash);
+         System.out.println(matched);
+         // Initial Deposit into Account
          System.out.println("Please make an initial deposit in USD");
          Scanner scannerInitialDeposit = new Scanner(System.in);
          String userInitialDeposit = scannerInitialDeposit.nextLine();
          String isDouble = userInitialDeposit.substring(0,1);
          String rest = userInitialDeposit.substring(1, userInitialDeposit.length());
          Double deposit = .0;
+         // Check to see if it can be deposited
          try {
             deposit = Double.parseDouble(userInitialDeposit);
-            }
-            catch (NumberFormatException exception) {
+         }
+         catch (NumberFormatException exception) {
             System.out.println("You can't deposit that");
-            }
+            System.exit(1);
+         }
          System.out.println("You have entered: " + userInitialDeposit + " USD");
          // Write to a file
          PrintWriter fileWriter = null;
@@ -88,55 +131,42 @@ public class ICS355ProgAssignment2 {
          if (fileWriter != null) {
             fileWriter.println("username password balance type ");
             fileWriter.println(userNameScanner + " " + generatedSecuredPasswordHash + " " 
-            + userInitialDeposit + " USD");
+               + userInitialDeposit + " USD");
             System.out.println("Wrote to file: " + isNew);
             // Close file to ensure it is written
             fileWriter.close();
+         }
+         else if (userInitialChoice.matches(".*\\byes\\b")) {
+         }
+         // Transfer Money
+         System.out.println("Would you like to transfer money to a different account? Enter Yes or No.");
+         Scanner scannerYes = new Scanner(System.in);
+         String answerYes = scannerYes.nextLine();
+         System.out.println("You have entered: " + answerYes);
+         String userYesNo = answerYes.toLowerCase();
+         // If Yes
+         if (userYesNo.matches(".*\\byes\\b")) {
+            System.out.println("Enter the amount in which you would like to transfer.");
+            Scanner scannerTransfer = new Scanner(System.in);
+            String userTransfer = scannerTransfer.nextLine();
+            String isTranfer = userTransfer.substring(0,1);
+            String restOfit = userTransfer.substring(1, userTransfer.length());
+            Double transfer = .0;
+            try {
+               transfer = Double.parseDouble(userTransfer);
             }
-            
-      // Login
-      
-      } else if (userInitialChoice.matches("2")) {
-         System.out.println("You have chosen to Login");
-         // Enter username
-         System.out.println("Please enter your username.");
-         Scanner scannerEnterID = new Scanner(System.in);
-         String userEnterID = scannerEnterID.nextLine();
-         System.out.println("You have entered " + userEnterID + " as your username");
-         File adminFile = null;
-         Scanner readFromAdmin = null;
-         Scanner readlineInput = null;
-         String lineofAdmin = null;
-         adminFile = new File(args[0]);
-         try{
-         readFromAdmin = new Scanner(adminFile);
+            catch (NumberFormatException exception) {
+               System.out.println("You can't transfer that");
+            }
+            System.out.println("You have entered: " + userTransfer + " USD");
+         // Transfer to account
+            System.out.println("Who would you like to transfer the money to?");
+            Scanner scannerTransferTarget = new Scanner(System.in);
+            String userTarget = scannerTransferTarget.nextLine();
+         } //If Yes
+         else if (userYesNo.matches(".*\\bno\\b")) {
+            System.out.println("Have a great day.");
          }
-         catch (FileNotFoundException exception) {
-         System.out.println("No Admin File.");
-         System.exit(1);
-         }
-         System.out.println("Please enter your password.");
-         Scanner scannerEnterPass = new Scanner(System.in);
-         String userEnterPass = scannerEnterPass.nextLine();
-         String PasswordHash = BCrypt.hashpw(userEnterPass, BCrypt.gensalt(12));
-         //System.out.println("You have entered " + userEnterPass + " as your password");
-         while (readFromAdmin.hasNextLine()) {
-         lineofAdmin = readFromAdmin.nextLine();
-         readlineInput = new Scanner(lineofAdmin).useDelimiter("\\s|\\n");
-         //System.out.println(lineofAdmin);
-         String username = readlineInput.next();
-         String password = readlineInput.next();
-         boolean matched = BCrypt.checkpw(password, PasswordHash);
-         if (matched == true) {
-         System.out.println(matched + "!!!!!!!!");
-         }
-         String balance = readlineInput.next();
-         String type = readlineInput.next();
-         }
-      } else {
-         System.out.println("You did not enter either 1 or 2");
-         System.exit(1);
-      }
       System.out.println("Would you like add/subtract from your account? Enter Yes or No: ");
       Scanner scannerYN = new Scanner(System.in);
       String answer = scannerYN.nextLine();
@@ -170,22 +200,22 @@ public class ICS355ProgAssignment2 {
          }
             //System.out.println(updatedAmount);
             // Write to a file
-         PrintWriter fileWriter = null;
+         PrintWriter fileWrite = null;
          try {
-            fileWriter = new PrintWriter(file);
+            fileWrite = new PrintWriter(file);
          } catch (FileNotFoundException exception) {
                 // Error message if the file is not found
             System.out.print("ERROR: File not found for \"");
             System.out.println(file + "\"");
          }
-         if (fileWriter != null) {
-            fileWriter.println("Amount Type");
-            fileWriter.println(updatedAmount + " USD");
+         if (fileWrite != null) {
+            fileWrite.println("Amount Type");
+            fileWrite.println(updatedAmount + " USD");
          }
             // Let the user know what is being written
          System.out.println("Wrote to file: " + file);
             // Close file to ensure it is written
-         fileWriter.close();
+         fileWrite.close();
       } else if (userYN.matches(".*\\bno\\b")) {
          System.out.println("Would you like your balance?");
          Scanner scannerYN1 = new Scanner(System.in);
@@ -215,22 +245,22 @@ public class ICS355ProgAssignment2 {
             } catch (NoSuchElementException e) {
                System.out.println("You don't have a balance yet.");
                     // Write to a file
-               PrintWriter fileWriter = null;
+               PrintWriter fileWrite = null;
                try {
-                  fileWriter = new PrintWriter(file);
+                  fileWrite = new PrintWriter(file);
                } catch (FileNotFoundException exception) {
                         // Error message if the file is not found
                   System.out.print("ERROR: File not found for \"");
                   System.out.println(file + "\"");
                }
-               if (fileWriter != null) {
-                  fileWriter.println("Amount Type");
-                  fileWriter.println("0 USD");
+               if (fileWrite != null) {
+                  fileWrite.println("Amount Type");
+                  fileWrite.println("0 USD");
                }
                     // Let the user know what is being written
                System.out.println("Wrote to file: " + file);
                     // Close file to ensure it is written
-               fileWriter.close();
+               fileWrite.close();
             }
          } else if (userYN1.matches(".*\\bno\\b")) {
             System.out.println("Take care, See you soon!");
@@ -239,7 +269,10 @@ public class ICS355ProgAssignment2 {
       } else {
          System.out.println("I did not understand your answer. Please try again.");
       }
-   
+   } else {
+         System.out.println("");
+         System.exit(1);
+      }
    }//main
    
    public static Integer adminMenu() {
@@ -470,7 +503,6 @@ class Currency {
       return output;
    }
 }//class Currency
-
 // Copyright (c) 2006 Damien Miller <djm@mindrot.org>
 //
 // Permission to use, copy, modify, and distribute this software for any
